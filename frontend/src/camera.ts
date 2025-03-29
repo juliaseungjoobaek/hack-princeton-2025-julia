@@ -89,6 +89,7 @@ export class CameraStream {
             if (!this.streaming) return;
 
             context?.drawImage(this.video, 0, 0, this.canvas.width, this.canvas.height);
+            // Convert to blob and send directly
             this.canvas.toBlob((blob) => {
                 if (blob && this.socket && this.streaming) {
                     this.socket.send(blob);

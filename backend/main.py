@@ -5,17 +5,32 @@ import os
 from datetime import datetime
 import aiofiles
 import base64
+import json
+from io import BytesIO
+from PIL import Image
+import requests
+
 
 app = FastAPI()
 
-# Configure CORS to allow requests from your frontend
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],  # Allow any origin
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+def classify_character(image):
+    # image is a PIL.Image object
+    COMPUTE_URL = "http://localhost:4000"
+    # Convert PIL Image to bytes for sending
+    img_byte_arr = BytesIO()
+    image.save(img_byte_arr, format='JPEG')
+    img_byte_arr = img_byte_arr.getvalue()
+    
+    response = requests.post(f"{COMPUTE_URL}/classify", files={"image": img_byte_arr})
+    if response.status_code != 200:
+        print(f"Error from compute service: Status {response.status_code}")
+        return None
+    try:
+        return response.json()["character"]
+    except (KeyError, ValueError) as e:
+        print(f"Error parsing response from compute service: {e}")
+        return None
+
 
 # Create a directory to store received frames
 UPLOAD_DIR = "received_frames"
@@ -32,23 +47,30 @@ async def websocket_endpoint(websocket: WebSocket):
     frame_count = 0
     try:
         while True:
-            # Receive the binary frame data
+            # Receive the binary frame data directly
             frame_data = await websocket.receive_bytes()
             
-            # Save the frame
-            # not save just to save memory...
-            # frame_filename = os.path.join(session_dir, f"frame_{frame_count:06d}.jpg")
-            # async with aiofiles.open(frame_filename, 'wb') as f:
-            #     await f.write(frame_data)
+            # Convert binary data to PIL Image
+            image = Image.open(BytesIO(frame_data))
             
             frame_count += 1
             
-            # Send the frame back to the client
-            # Convert binary data to base64 string for sending via WebSocket
+            character = classify_character(image)
+
+            # image should be in binary format for sending
+            # Convert the image back to binary for sending
+            # img_byte_arr = BytesIO()
+            # image.save(img_byte_arr, format='JPEG', quality=70)
+            # response_bytes = img_byte_arr.getvalue()
+            
+            # # Convert to base64 for JSON response
+            # # base64_frame = base64.b64encode(response_bytes).decode('utf-8')
             base64_frame = base64.b64encode(frame_data).decode('utf-8')
+            
             await websocket.send_json({
                 "frame_number": frame_count,
-                "frame_data": f"data:image/jpeg;base64,{base64_frame}"
+                "frame_data": f"data:image/jpeg;base64,{base64_frame}",
+                "character": character
             })
             print(f"Sent frame {frame_count}")
             
