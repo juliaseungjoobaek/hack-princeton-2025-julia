@@ -2,6 +2,7 @@ export class CameraStream {
     private video: HTMLVideoElement;
     private serverFeed: HTMLImageElement;
     private subtitlesElement: HTMLDivElement;
+    private predictionElement: HTMLDivElement;
     private stream: MediaStream | null = null;
     private socket: WebSocket | null = null;
     private canvas: HTMLCanvasElement;
@@ -15,15 +16,25 @@ export class CameraStream {
         
         // Create and style subtitles element
         this.subtitlesElement = document.createElement('div');
+        this.predictionElement = document.createElement('div');
+
         this.subtitlesElement.style.textAlign = 'center';
         this.subtitlesElement.style.padding = '10px';
         this.subtitlesElement.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
         this.subtitlesElement.style.color = 'white';
         this.subtitlesElement.style.borderRadius = '4px';
         this.subtitlesElement.style.margin = '10px 0';
+
+        this.predictionElement.style.textAlign = 'center';
+        this.predictionElement.style.padding = '10px';
+        this.predictionElement.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+        this.predictionElement.style.color = 'white';
+        this.predictionElement.style.borderRadius = '4px';
+        this.predictionElement.style.margin = '10px 0';
         
         // Insert subtitles element after the server feed
         this.serverFeed.parentElement?.appendChild(this.subtitlesElement);
+        this.serverFeed.parentElement?.appendChild(this.predictionElement);
     }
 
     async start() {
@@ -58,6 +69,10 @@ export class CameraStream {
                     if (data.subtitle) {
                         console.log("received subtitle", data.subtitle);
                         this.subtitlesElement.textContent = data.subtitle;
+                    }
+                    if (data.predicted) {
+                        console.log(`received prediction ${data.predicted}`);
+                        this.predictionElement.textContent = data.predicted;
                     }
                 } catch (error) {
                     console.error('Error processing server message:', error);

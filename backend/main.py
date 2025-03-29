@@ -100,7 +100,7 @@ async def websocket_endpoint(websocket: WebSocket):
                 "frame_number": frame_count,
                 "frame_data": last_frame_data,
                 "subtitle": subtitle,
-                "predicted_word": predicted_word
+                "predicted": predicted_word
             })
             # print(f"Sent frame {frame_count}")
             
