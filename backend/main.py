@@ -45,6 +45,7 @@ async def websocket_endpoint(websocket: WebSocket):
     os.makedirs(session_dir, exist_ok=True)
     
     frame_count = 0
+    subtitle = ""
     try:
         while True:
             # Receive the binary frame data directly
@@ -56,6 +57,8 @@ async def websocket_endpoint(websocket: WebSocket):
             frame_count += 1
             
             character = classify_character(image)
+            if character:
+                subtitle += character
 
             # image should be in binary format for sending
             # Convert the image back to binary for sending
@@ -70,7 +73,7 @@ async def websocket_endpoint(websocket: WebSocket):
             await websocket.send_json({
                 "frame_number": frame_count,
                 "frame_data": f"data:image/jpeg;base64,{base64_frame}",
-                "subtitle": character
+                "subtitle": subtitle
             })
             print(f"Sent frame {frame_count}")
             

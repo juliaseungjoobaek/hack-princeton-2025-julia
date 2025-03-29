@@ -2,6 +2,7 @@ from fastapi import FastAPI, WebSocket
 from fastapi.middleware.cors import CORSMiddleware
 import asyncio
 import os
+import random
 from datetime import datetime
 import aiofiles
 import base64
@@ -23,7 +24,7 @@ async def classify_character(image: UploadFile = File(...)):
     # Now you can work with the PIL Image object
     # TODO: Add your classification logic here
     
-    return {"character": "A"}
+    return {"character": random.choice("ABC")}
 
 
 @app.get("/")
