@@ -26,21 +26,42 @@ body {
   margin: 0;
   display: flex;
   place-items: center;
-  min-width: 320px;
+  min-width: 100vw;
   min-height: 100vh;
+  overflow-x: hidden;
+}
+
+#app {
+  margin: 0;
+  display: flex;
+  place-items: center;
+  width: 100vw;
+  height: 100vh;
+  overflow-x: hidden;
+}
+
+.container-center-horizontal {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+.container-center-vertical {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
 }
 
 h1 {
   font-size: 2.5em;
   line-height: 1.1;
   margin-bottom: 2rem;
-}
-
-.container {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
 }
 
 .video-container {
@@ -127,16 +148,18 @@ button:focus-visible {
 
 .streams-container {
   display: flex;
-  gap: 2rem;
+  gap: 1rem;
   justify-content: center;
   flex-wrap: wrap;
-  margin: 2rem 0;
+  margin: 1rem 0;
+  width: 100%;
 }
 
 .stream-box {
   flex: 1;
   min-width: 320px;
-  max-width: 640px;
+  max-width: none;
+  width: 100%;
 }
 
 .stream-box h3 {

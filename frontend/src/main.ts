@@ -3,26 +3,30 @@ import './style.css';
 import { CameraStream } from './camera'
 
 document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
-  <div class="container">
-    <h1>Camera Stream</h1>
-    <div class="streams-container">
-      <div class="stream-box">
-        <h3>Camera Feed</h3>
-        <video id="camera-feed" autoplay playsinline></video>
+  <div class="container-center-vertical">
+    <div class="container-center-horizontal">
+      <div class="container" style="width: 70%;">
+        <h1>Camera Stream</h1>
+        <div class="streams-container">
+          <div class="stream-box">
+            <h3>Camera Feed</h3>
+            <video id="camera-feed" autoplay playsinline></video>
+          </div>
+          <div class="stream-box">
+            <h3>Server Feed</h3>
+            <img id="server-feed" alt="Server feed"/>
+          </div>
+        </div>
+        <div class="controls">
+          <button id="startButton">Start Camera</button>
+          <button id="stopButton">Stop Camera</button>
+          <button id="startStreamButton">Start Streaming</button>
+          <button id="stopStreamButton">Stop Streaming</button>
+        </div>
+        <div class="status">
+          <p id="connectionStatus">Not connected</p>
+        </div>
       </div>
-      <div class="stream-box">
-        <h3>Server Feed</h3>
-        <img id="server-feed" alt="Server feed"/>
-      </div>
-    </div>
-    <div class="controls">
-      <button id="startButton">Start Camera</button>
-      <button id="stopButton">Stop Camera</button>
-      <button id="startStreamButton">Start Streaming</button>
-      <button id="stopStreamButton">Stop Streaming</button>
-    </div>
-    <div class="status">
-      <p id="connectionStatus">Not connected</p>
     </div>
   </div>
 `
