@@ -13,6 +13,14 @@ import requests
 
 app = FastAPI()
 
+def pil_to_base64(img: Image.Image):
+    img_byte_arr = BytesIO()
+    img.save(img_byte_arr, format='JPEG')
+    img_byte_arr = img_byte_arr.getvalue()
+    base64_frame = base64.b64encode(img_byte_arr).decode('utf-8')
+    return f"data:image/jpeg;base64,{base64_frame}"
+
+
 def classify_character(image):
     # image is a PIL.Image object
     COMPUTE_URL = "http://localhost:4000"
@@ -26,7 +34,7 @@ def classify_character(image):
         print(f"Error from compute service: Status {response.status_code}")
         return None
     try:
-        return response.json()["character"]
+        return response.json()
     except (KeyError, ValueError) as e:
         print(f"Error parsing response from compute service: {e}")
         return None
@@ -46,6 +54,7 @@ async def websocket_endpoint(websocket: WebSocket):
     
     frame_count = 0
     subtitle = ""
+    last_frame_data = None
     try:
         while True:
             # Receive the binary frame data directly
@@ -56,23 +65,17 @@ async def websocket_endpoint(websocket: WebSocket):
             
             frame_count += 1
             
-            character = classify_character(image)
-            if character:
-                subtitle += character
+            classifier_response = classify_character(image)
+            if classifier_response['character']:
+                subtitle += classifier_response['character']
+            if classifier_response['frame']:
+                last_frame_data = classifier_response['frame']
+            else:
+                last_frame_data = pil_to_base64(image)
 
-            # image should be in binary format for sending
-            # Convert the image back to binary for sending
-            # img_byte_arr = BytesIO()
-            # image.save(img_byte_arr, format='JPEG', quality=70)
-            # response_bytes = img_byte_arr.getvalue()
-            
-            # # Convert to base64 for JSON response
-            # # base64_frame = base64.b64encode(response_bytes).decode('utf-8')
-            base64_frame = base64.b64encode(frame_data).decode('utf-8')
-            
             await websocket.send_json({
                 "frame_number": frame_count,
-                "frame_data": f"data:image/jpeg;base64,{base64_frame}",
+                "frame_data": last_frame_data,
                 "subtitle": subtitle
             })
             print(f"Sent frame {frame_count}")
