@@ -14,7 +14,10 @@ dependencies = [
     "python-multipart (>=0.0.20,<0.0.21)",
     "aiofiles (>=24.1.0,<25.0.0)",
     "requests (>=2.32.3,<3.0.0)",
-    "pillow (>=11.1.0,<12.0.0)"
+    "pillow (>=11.1.0,<12.0.0)",
+    "google (>=3.0.0,<4.0.0)",
+    "google-api-python-client (>=2.166.0,<3.0.0)",
+    "google-generativeai (>=0.8.4,<0.9.0)"
 ]
 
 

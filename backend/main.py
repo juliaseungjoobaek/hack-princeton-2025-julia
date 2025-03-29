@@ -10,6 +10,12 @@ from io import BytesIO
 from PIL import Image
 import requests
 
+from llm_autocorrect import LLMAutocorrectWord
+
+SUBTITLE_MAX_LENGTH = 30
+CLASSIFY_BUFFER_LENGTH = 10
+API_KEY = os.getenv('GEMINI_API')
+llm = LLMAutocorrectWord(api = API_KEY)
 
 app = FastAPI()
 
@@ -56,6 +62,8 @@ async def websocket_endpoint(websocket: WebSocket):
     subtitle = ""
     last_frame_data = None
     try:
+        subtitle_buffer_counter = 0
+        last_classified_charachter = None
         while True:
             # Receive the binary frame data directly
             frame_data = await websocket.receive_bytes()
@@ -66,8 +74,23 @@ async def websocket_endpoint(websocket: WebSocket):
             frame_count += 1
             
             classifier_response = classify_character(image)
-            if classifier_response['character']:
-                subtitle += classifier_response['character']
+            character = classifier_response['character']
+            predicted_word = ''
+
+            if character:
+                print(character)
+                # If we are getting CLASSIFY_BUFFER_LENGTH consecutive same character,
+                # then we are adding it to the subtitle
+                if character == last_classified_charachter:
+                    subtitle_buffer_counter += 1
+                else: # The character has changed
+                    subtitle_buffer_counter = 0
+                    last_classified_charachter = character
+                if subtitle_buffer_counter == CLASSIFY_BUFFER_LENGTH:
+                    subtitle += character
+                    predicted_word = llm.complete(subtitle.split(' ')[-1])
+                    subtitle_buffer_counter = 0
+
             if classifier_response['frame']:
                 last_frame_data = classifier_response['frame']
             else:
@@ -76,9 +99,10 @@ async def websocket_endpoint(websocket: WebSocket):
             await websocket.send_json({
                 "frame_number": frame_count,
                 "frame_data": last_frame_data,
-                "subtitle": subtitle
+                "subtitle": subtitle,
+                "predicted_word": predicted_word
             })
-            print(f"Sent frame {frame_count}")
+            # print(f"Sent frame {frame_count}")
             
     except Exception as e:
         print(f"Error: {e}")
