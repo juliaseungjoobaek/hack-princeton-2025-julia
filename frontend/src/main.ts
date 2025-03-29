@@ -39,7 +39,12 @@ const startStreamButton = document.querySelector<HTMLButtonElement>('#startStrea
 const stopStreamButton = document.querySelector<HTMLButtonElement>('#stopStreamButton')!
 const connectionStatus = document.querySelector<HTMLParagraphElement>('#connectionStatus')!
 
-const WEBSOCKET_URL = 'ws://localhost:8765/ws';
+// hardcoded for now
+// const WEBSOCKET_URL = 'ws://localhost:4000/ws';
+// const WEBSOCKET_URL = 'ws://k0ge0vlzsszuud-4000.proxy.runpod.net/ws';
+// const SERVER_URL = 'http://localhost:4000';
+// const SERVER_URL = 'http://k0ge0vlzsszuud-4000.proxy.runpod.net';
+const WEBSOCKET_URL = 'ws://localhost:8000/ws';
 const cameraStream = new CameraStream(videoElement, serverFeedElement);
 
 startButton.addEventListener('click', async () => {
@@ -51,7 +56,7 @@ startButton.addEventListener('click', async () => {
         
         // Connect to WebSocket server when camera starts
         try {
-            cameraStream.connectToServer(WEBSOCKET_URL);
+          cameraStream.connectToServer(WEBSOCKET_URL);
             connectionStatus.textContent = 'Connected to server';
         } catch (error) {
             console.error('Failed to connect to server:', error);
