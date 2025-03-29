@@ -14,7 +14,8 @@ dependencies = [
     "python-multipart (>=0.0.20,<0.0.21)",
     "aiofiles (>=24.1.0,<25.0.0)",
     "pillow (>=11.1.0,<12.0.0)",
-    "mediapipe (>=0.10.21,<0.11.0)"
+    "mediapipe (>=0.10.21,<0.11.0)",
+    "scikit-learn (>=1.6.1,<2.0.0)"
 ]
 
 

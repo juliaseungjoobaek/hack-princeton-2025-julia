@@ -8,9 +8,15 @@ import aiofiles
 import base64
 from fastapi import UploadFile, File
 from PIL import Image
+from sign_langauge_predictor import SignLanguagePredictor
 import io
+import cv2
+import numpy as np
 
 app = FastAPI()
+
+
+predictor = SignLanguagePredictor('./model.p') # hardcoded for now
 
 
 @app.post("/classify")
@@ -21,10 +27,10 @@ async def classify_character(image: UploadFile = File(...)):
     # Create a PIL Image from the bytes
     img = Image.open(io.BytesIO(contents))
     
-    # Now you can work with the PIL Image object
-    # TODO: Add your classification logic here
-    
-    return {"character": random.choice("ABC")}
+    frame = np.array(img.convert('RGB'))
+    prediction, _ = predictor.predict(frame)
+    print('predicted character', prediction)
+    return {"character": prediction}
 
 
 @app.get("/")
