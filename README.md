@@ -19,7 +19,7 @@ poetry install
 
 
 ```bash
-cd backend
+cd compute
 poetry install
 ```
 
