@@ -1,6 +1,7 @@
 export class CameraStream {
     private video: HTMLVideoElement;
     private serverFeed: HTMLImageElement;
+    private subtitlesElement: HTMLDivElement;
     private stream: MediaStream | null = null;
     private socket: WebSocket | null = null;
     private canvas: HTMLCanvasElement;
@@ -11,6 +12,18 @@ export class CameraStream {
         this.video = videoElement;
         this.serverFeed = serverFeedElement;
         this.canvas = document.createElement('canvas');
+        
+        // Create and style subtitles element
+        this.subtitlesElement = document.createElement('div');
+        this.subtitlesElement.style.textAlign = 'center';
+        this.subtitlesElement.style.padding = '10px';
+        this.subtitlesElement.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+        this.subtitlesElement.style.color = 'white';
+        this.subtitlesElement.style.borderRadius = '4px';
+        this.subtitlesElement.style.margin = '10px 0';
+        
+        // Insert subtitles element after the server feed
+        this.serverFeed.parentElement?.appendChild(this.subtitlesElement);
     }
 
     async start() {
@@ -39,8 +52,12 @@ export class CameraStream {
                 try {
                     const data = JSON.parse(event.data);
                     if (data.frame_data) {
-                        console.log("received frame", data.frame_number)
+                        console.log("received frame", data.frame_number);
                         this.serverFeed.src = data.frame_data;
+                    }
+                    if (data.subtitle) {
+                        console.log("received subtitle", data.subtitle);
+                        this.subtitlesElement.textContent = data.subtitle;
                     }
                 } catch (error) {
                     console.error('Error processing server message:', error);
@@ -117,5 +134,6 @@ export class CameraStream {
             this.stream = null;
         }
         this.video.srcObject = null;
+        this.subtitlesElement.textContent = '';
     }
 } 

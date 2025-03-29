@@ -70,7 +70,7 @@ async def websocket_endpoint(websocket: WebSocket):
             await websocket.send_json({
                 "frame_number": frame_count,
                 "frame_data": f"data:image/jpeg;base64,{base64_frame}",
-                "character": character
+                "subtitle": character
             })
             print(f"Sent frame {frame_count}")
             
