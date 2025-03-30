@@ -9,7 +9,7 @@ from transformers import T5Tokenizer, T5ForConditionalGeneration
 from pytorch_i3d import InceptionI3d
 
 # ======== CONFIG ========
-T5_MODEL_PATH = r"C:\Users\seungjoobaek\Documents\hackprinceton\checkpoint-10964"  # Local path to saved model folder
+T5_MODEL_PATH = "../checkpoint-10964"  # Local path to saved model folder
 I3D_WEIGHTS = './archived/asl2000/FINAL_nslt_2000_iters=5104_top1=32.48_top5=57.31_top10=66.31.pt'
 CLASS_LIST = './preprocess/wlasl_class_list.txt'
 NUM_CLASSES = 2000
